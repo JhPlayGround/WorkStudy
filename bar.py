@@ -22,7 +22,11 @@ text = chart.mark_text(
     text='wheat:Q'
 )
 
-chart = chart + text
+rule = alt.Chart(source).mark_rule(color='red').encode(
+    y='mean(wheat):Q'
+)
+
+chart = chart + text + rule
 
 chart.save('bar.html')
 
