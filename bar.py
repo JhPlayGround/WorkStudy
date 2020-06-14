@@ -14,7 +14,15 @@ chart = alt.Chart(source).mark_bar().encode(
     )
 ).properties(width=1200, height=600)
 
+text = chart.mark_text(
+    align='right',
+    baseline='bottom', 
+    dx=6
+).encode(
+    text='wheat:Q'
+)
 
+chart = chart + text
 
 chart.save('bar.html')
 
