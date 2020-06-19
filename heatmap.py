@@ -1,19 +1,43 @@
+#차트 라이브러리
 import altair as alt
+from altair_saver import save
+
+#기본 라이브러리
 import numpy as np
 import pandas as pd
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
+
+
+#데이터셋 라이브러리
+from vega_datasets import data
+
 import seaborn as sns
-
-# 데이터
 flights = sns.load_dataset('flights')
-source = pd.DataFrame({'연도': flights['year'], '월': flights['month'],'탑승자 수': flights['passengers']})
 
-#그리기
-chart = alt.Chart(source, title="연도 경과에 따른 월별 비행기 탑승자 수").mark_rect().encode(
-    alt.X('연도:O', scale=alt.Scale(paddingInner=0)),
-    alt.Y('월:O', scale=alt.Scale(paddingInner=0)),
-    color=alt.Color('탑승자 수:Q', scale=alt.Scale(scheme="greenblue"), legend=alt.Legend(direction='horizontal')),
-    tooltip=[alt.Tooltip('연도:O', title='연도'), alt.Tooltip('월:O', title='월'), alt.Tooltip('탑승자 수:Q', title='탑승자 수')],
-).properties(width=550, height=300)
+source = pd.DataFrame({'Year': flights.year, 'Month':flights.month, 'Passengers':flights.passengers})
 
-#저장
-chart.save('heatmap.html')
+base = alt.Chart(source, title="연도 경과에 따른 월별 비행기 탑승 고객수").encode(
+    x='Year:O', y='Month:O'
+    
+).properties(width=550, height =300)
+
+heatmap = base.mark_rect().encode(
+    color=alt.Color('Passengers:Q', scale=alt.Scale(scheme="viridis"), legend=alt.Legend(direction='horizontal')),
+    tooltip=[alt.Tooltip('Year:O', title='연도 '), alt.Tooltip('Month:O', title='월'), alt.Tooltip('Passengers:Q', title='탑승객 수')]
+)
+
+text = base.mark_text(baseline = 'middle').encode(
+    text = 'Passengers',
+    color=alt.condition(
+        alt.datum.Passengers > 300,
+        alt.value('black'),
+        alt.value('white')
+    )
+)
+
+chart = (heatmap + text)
+
+chart.save('Simple Heatmap.html')
