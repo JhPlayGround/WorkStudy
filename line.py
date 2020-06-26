@@ -134,3 +134,22 @@ line = base.mark_line(interpolate='step-after').encode(
 )
 chart = alt.layer(line).properties(width=550)
 chart.save('Simple Line Chart6.html')
+
+
+"""
+라인 그래프 - Custom Path
+"""
+source = data.driving()
+
+#공통 특성
+base = alt.Chart()
+
+#라인
+line = base.mark_line(point=True).encode(
+    x = alt.X('miles', scale=alt.Scale(zero=False)),
+    y= alt.Y('gas', scale=alt.Scale(zero=False)),
+    order='year' #선 그리는 순서
+)
+
+chart = alt.layer(line, data = source)
+chart.save('Simple Line Chart7.html')
