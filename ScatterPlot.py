@@ -139,3 +139,39 @@ y_ticks = base.mark_tick().encode(
 
 chart = y_ticks | (plot & x_ticks)
 chart.save('Simple ScatterPlot5.html')
+
+
+
+##산점도 - 매트릭스 
+
+brush = alt.selection(type='interval')
+base = alt.Chart(source).add_selection(brush)
+
+chart = base.mark_circle().encode(
+    x = alt.X(alt.repeat("column"), type='quantitative'),
+    y = alt.Y(alt.repeat("row"), type='quantitative'),
+    color=alt.condition(brush, 'Origin', alt.value('grey'))
+).repeat(
+    row=['Horsepower', 'Acceleration', 'Miles_per_Gallon'],
+    column=['Miles_per_Gallon', 'Acceleration', 'Horsepower']
+).interactive()
+
+chart.save('Simple ScatterPlot8.html')
+
+#산점도 - 링크 
+brush = alt.selection(type='interval')
+base = alt.Chart().add_selection(brush)
+
+plot = base.transform_calculate(
+    url='https://www.google.com/search?q=' + alt.datum.Name
+).mark_point().encode(
+    x=alt.X('Horsepower:Q', scale=alt.Scale(zero=False) , title='Horsepower'),
+    y=alt.Y('Miles_per_Gallon:Q',scale=alt.Scale(zero=False, padding=1), title='Miles_per_Gallon'),
+    color=alt.condition(brush, 'Origin', alt.value('grey')),
+    href='url:N',
+    tooltip=['Name:N', 'url:N']
+)
+
+chart = alt.layer(plot, data = source)
+
+chart.save('Simple ScatterPlot9.html')
